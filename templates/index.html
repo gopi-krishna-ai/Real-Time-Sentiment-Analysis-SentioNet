@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SentioNet — Text & Audio Sentiment Analysis</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand-wrap">
+    <div class="brand-mark">S</div>
+    <div>
+      <h1>SentioNet</h1>
+      <p>Text & Audio Sentiment Analysis</p>
+    </div>
+  </div>
+  <div class="header-badge">AI / ML Prototype</div>
+</header>
+
+<main class="container">
+  <section class="hero panel">
+    <div>
+      <span class="eyebrow">EMOTION-AWARE ANALYSIS</span>
+      <h2>Understand what people are saying — and how it sounds.</h2>
+      <p class="hero-copy">
+        SentioNet analyzes written text and uploaded speech to estimate sentiment or emotion,
+        show confidence, explain the prediction, and provide role-based response guidance.
+        It is useful for customer feedback, support conversations, surveys, learning platforms,
+        call analysis, and human–AI interaction prototypes.
+      </p>
+    </div>
+    <div class="hero-grid">
+      <div class="mini-card"><strong>Text</strong><span>TF-IDF + Logistic Regression</span></div>
+      <div class="mini-card"><strong>Audio</strong><span>MFCC + ML classifier</span></div>
+      <div class="mini-card"><strong>Explainable</strong><span>Confidence + influential features</span></div>
+      <div class="mini-card"><strong>Local</strong><span>No external API required</span></div>
+    </div>
+  </section>
+
+  <section class="panel how-panel">
+    <div class="section-title"><div><span class="eyebrow">HOW IT IS USED</span><h2>From input to insight</h2></div></div>
+    <div class="flow">
+      <div><span>01</span><b>Provide input</b><small>Type text or upload a speech clip</small></div>
+      <i>→</i>
+      <div><span>02</span><b>Extract features</b><small>Language or acoustic patterns are transformed into model features</small></div>
+      <i>→</i>
+      <div><span>03</span><b>Predict</b><small>The trained local model estimates sentiment / emotion</small></div>
+      <i>→</i>
+      <div><span>04</span><b>Act</b><small>Use the result to guide review, support, or follow-up</small></div>
+    </div>
+  </section>
+
+  <section class="tabs panel">
+    <div class="tab-buttons">
+      <button class="tab-btn active" data-tab="text-tab">Text Analysis</button>
+      <button class="tab-btn" data-tab="audio-tab">Audio Analysis</button>
+    </div>
+
+    <div id="text-tab" class="tab-content active">
+      <div class="section-title">
+        <div><span class="eyebrow">NATURAL LANGUAGE PROCESSING</span><h2>Analyze written text</h2></div>
+        <span class="model-pill">TF-IDF · Logistic Regression</span>
+      </div>
+      <p class="note">Enter a review, message, feedback comment, or sentence. The model predicts Positive, Negative, or a derived Neutral state.</p>
+      <textarea id="text-input" rows="5" maxlength="1000" placeholder="Example: The support team solved my issue quickly and the experience was excellent."></textarea>
+      <div class="input-meta">
+        <label class="live-toggle"><input type="checkbox" id="live-mode" checked> Analyze as I type</label>
+        <span id="char-count">0 / 1000</span>
+      </div>
+      <div class="actions-row"><button id="analyze-btn" class="primary-btn">Analyze Sentiment</button><button id="demo-btn" class="secondary-btn">Try Demo Text</button></div>
+      <p id="form-error" class="form-error"></p>
+    </div>
+
+    <div id="audio-tab" class="tab-content" hidden>
+      <div class="section-title">
+        <div><span class="eyebrow">SPEECH EMOTION RECOGNITION</span><h2>Analyze an audio recording</h2></div>
+        <span class="model-pill">MFCC · Classical ML</span>
+      </div>
+      <p class="note">Upload a short WAV/MP3/M4A/FLAC clip. The system extracts acoustic features such as MFCCs and predicts the emotion class learned from your training dataset.</p>
+      <div id="drop-zone" class="drop-zone">
+        <input id="audio-input" type="file" accept="audio/*" hidden>
+        <div class="upload-icon">♪</div>
+        <b>Drop an audio file here</b>
+        <span>or</span>
+        <button id="choose-audio" class="secondary-btn" type="button">Choose Audio</button>
+        <small id="audio-name">No file selected</small>
+      </div>
+      <audio id="audio-preview" controls hidden></audio>
+      <button id="analyze-audio-btn" class="primary-btn full-btn">Analyze Audio</button>
+      <p id="audio-error" class="form-error"></p>
+    </div>
+  </section>
+
+  <section class="result-grid">
+    <section class="panel" id="result-panel" hidden>
+      <div class="section-title"><div><span class="eyebrow">TEXT RESULT</span><h2>Detected sentiment</h2></div></div>
+      <div class="sentiment-header"><span id="sentiment-badge" class="badge">—</span><span id="confidence-text" class="confidence-text"></span></div>
+      <div class="meter-label"><span>Negative</span><strong id="polarity-value">0</strong><span>Positive</span></div>
+      <div class="polarity-track"><div class="polarity-mid"></div><div id="polarity-marker" class="polarity-marker"></div></div>
+      <h3 class="subhead">Why the model leaned this way</h3><div id="words-list" class="words-list"></div>
+    </section>
+
+    <section class="panel" id="audio-result-panel" hidden>
+      <div class="section-title"><div><span class="eyebrow">AUDIO RESULT</span><h2>Detected emotion</h2></div></div>
+      <div class="audio-result-main"><span id="audio-badge" class="badge">—</span><strong id="audio-confidence"></strong></div>
+      <div id="audio-probabilities" class="probability-list"></div>
+      <p class="small-note">Audio emotion recognition is influenced by speaker, recording quality, language, intensity, and the distribution of the training dataset.</p>
+    </section>
+  </section>
+
+  <section class="panel" id="agents-panel" hidden>
+    <div class="section-title"><div><span class="eyebrow">DECISION SUPPORT</span><h2>Agent reactions</h2></div></div>
+    <p class="note">These are transparent rule-based recommendations built on top of the model result; they are not independent learned agents.</p>
+    <div id="agents-list" class="agents-list"></div>
+  </section>
+
+  <section class="panel" id="history-panel" hidden>
+    <div class="section-title"><div><span class="eyebrow">SESSION</span><h2>Sentiment trend</h2></div></div>
+    <div id="history-chart" class="history-chart"></div>
+  </section>
+</main>
+
+<footer class="footer">SentioNet · Academic AI/ML prototype · Models run locally after training</footer>
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
